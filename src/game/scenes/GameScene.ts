@@ -53,10 +53,6 @@ export default class GameScene extends SceneBase<PerspectiveCamera> {
   }
   init(): void {
     this.board.splitCube();
-    if (this.camera) {
-      this.scoreUI.bindCamera(this.camera);
-    }
-    this.pauseUI.bindCamera(this.camera);
     this.pauseUI.drawUI("Pause", "#0000ff");
     this.pauseUI.addClickListener(() => {
       console.log("Pause");

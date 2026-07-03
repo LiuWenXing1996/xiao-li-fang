@@ -1,31 +1,9 @@
-import mitt from "mitt";
-import {
-  Camera,
-  CanvasTexture,
-  DoubleSide,
-  Mesh,
-  MeshBasicMaterial,
-  Object3D,
-  PlaneGeometry,
-  Scene,
-  Sprite,
-  SpriteMaterial,
-  Vector3,
-  WebGLRenderer,
-} from "three";
-import {
-  InteractiveObject3D,
-  type MeshClickEvent,
-} from "./InteractiveObject3D";
-export const UIEvents = {
-  CLICK: "CLICK",
-};
+import { CanvasTexture, Sprite, SpriteMaterial } from "three";
+import { InteractiveObject3D } from "./InteractiveObject3D";
+
 export default class UI extends InteractiveObject3D {
-  private emitter = mitt();
   offscreenCanvas: HTMLCanvasElement;
-  private camera: Camera | null = null;
   uiTexture: CanvasTexture<HTMLCanvasElement>;
-  private offset = new Vector3(0, 0, -5);
   constructor() {
     super();
     //创建并初始化离屏 Canvas UI
@@ -41,15 +19,10 @@ export default class UI extends InteractiveObject3D {
     const uiSprite = new Sprite(uiMaterial);
     uiSprite.position.set(0, 0, 0);
     uiSprite.scale.set(4, 4, 1);
-    // const uiGeometry = new PlaneGeometry(2, 2);
-    // const uiMesh: Mesh<PlaneGeometry, MeshBasicMaterial> = new Mesh(
-    //   uiGeometry,
-    //   uiMaterial,
-    // );
+
     this.uiTexture = uiTexture;
     this.add(uiSprite);
   }
-  setupClickHandler(): void {}
   drawUI(text: string, color: string): void {
     const context = this.offscreenCanvas.getContext("2d");
     if (!context) {
@@ -77,12 +50,5 @@ export default class UI extends InteractiveObject3D {
     context.textBaseline = "middle";
     context.fillText(text, width / 2, height / 2);
     this.uiTexture.needsUpdate = true;
-  }
-  bindCamera(camera: Camera): void {
-    this.camera = camera;
-  }
-
-  setOffset(distance: number): void {
-    this.offset.z = -distance;
   }
 }

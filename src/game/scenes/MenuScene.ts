@@ -35,7 +35,6 @@ export default class MenuScene extends SceneBase<PerspectiveCamera> {
     return camera;
   }
   init() {
-    this.startUi.bindCamera(this.camera);
     this.startUi.addClickListener(() => {
       this.emitter.emit(MenuSceneEvents.START_GAME);
     });
