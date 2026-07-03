@@ -1,6 +1,10 @@
 import { Scene, Camera, WebGLRenderer } from "three";
 
-export abstract class SceneBase<T extends Camera = Camera> extends Scene {
+class SceneWithGameObject3D extends Scene {}
+
+export abstract class SceneBase<
+  T extends Camera = Camera,
+> extends SceneWithGameObject3D {
   _camera: T | null = null;
   isActive: boolean = false;
   renderer: WebGLRenderer;

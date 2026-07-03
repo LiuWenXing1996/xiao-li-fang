@@ -9,7 +9,8 @@ import {
   Color,
 } from "three";
 import PolyominoCube from "./PolyominoCube";
-import { InteractiveObject3D } from "./InteractiveObject3D";
+import { GameObject3D } from "./GameObject3D";
+import { GameEvent } from "./types";
 
 export interface PolyominoConfig {
   cubes: {
@@ -25,7 +26,7 @@ export interface PolyominoConfig {
   isQuestion?: boolean;
 }
 
-export default class Polyomino extends InteractiveObject3D {
+export default class Polyomino extends GameObject3D {
   cubeList: PolyominoCube[] = [];
   private isSelected: boolean = false;
   private highlightedEdges: Object3D[] = [];
@@ -56,16 +57,23 @@ export default class Polyomino extends InteractiveObject3D {
       this.cubeList.push(cube);
       this.originalColors.push(baseColor.clone());
     }
-    this.addClickListener(() => {
+    this.addClickListenerCustom(GameEvent.Click, () => {
+      console.log("点击积木");
       if (!this.isSelected) {
         this.setSelected(true);
       } else {
-        
+        this.removeFromParent();
       }
+    });
+    this.addClickListenerCustom(GameEvent.ClickEmpty, () => {
+      console.log("点击空白");
+      this.setSelected(false);
+      return true;
     });
   }
 
   setSelected(selected: boolean): void {
+    console.log("设置选中状态", selected);
     // 如果是问号积木，不能被选中
     if (this.isQuestion) return;
 

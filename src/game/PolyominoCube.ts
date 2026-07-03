@@ -9,7 +9,8 @@ import {
   CanvasTexture,
   type ColorRepresentation,
 } from "three";
-import { InteractiveObject3D } from "./InteractiveObject3D";
+import { GameObject3D } from "./GameObject3D";
+import { GameEvent } from "./types";
 
 export interface PolyominoCubeConfig {
   boxColor?: ColorRepresentation;
@@ -18,7 +19,7 @@ export interface PolyominoCubeConfig {
   isQuestion?: boolean;
 }
 
-export default class PolyominoCube extends InteractiveObject3D {
+export default class PolyominoCube extends GameObject3D {
   public readonly config: Readonly<PolyominoCubeConfig>;
   public isQuestionBlock: boolean = false; // 是否为问号块
   public isRevealed: boolean = false; // 是否已变色
@@ -81,12 +82,13 @@ export default class PolyominoCube extends InteractiveObject3D {
 
     this.add(mesh);
     this.add(lineSegments);
-    this.addClickListener(() => {
+    this.addClickListenerCustom(GameEvent.Click, () => {
       // 未变色时，点击事件被拦截
-      if (!this.isRevealed) {
+      if (this.isQuestionBlock && !this.isRevealed) {
         return true;
       }
     });
+    this.emitBubbleEvent(GameEvent.AddScore, { score: 1 });
   }
 
   // 改变方块颜色

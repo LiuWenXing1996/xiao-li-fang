@@ -5,10 +5,11 @@ import {
   Vector2,
   WebGLRenderer,
 } from "three";
-import { SceneBase } from "../SceneBase";
-import { GlobalConfig } from "../GlobalConfig";
-import UI from "../UI";
+import { SceneBase } from "../../SceneBase";
 import mitt from "mitt";
+import { GlobalConfig } from "../../GlobalConfig";
+import { GameEvent } from "../../types";
+import UI from "../../UI";
 
 export const MenuSceneEvents = {
   START_GAME: "START_GAME",
@@ -35,7 +36,7 @@ export default class MenuScene extends SceneBase<PerspectiveCamera> {
     return camera;
   }
   init() {
-    this.startUi.addClickListener(() => {
+    this.startUi.addClickListenerCustom(GameEvent.Click, () => {
       this.emitter.emit(MenuSceneEvents.START_GAME);
     });
   }

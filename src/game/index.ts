@@ -1,8 +1,9 @@
 import { WebGLRenderer } from "three";
 import UI from "./UI";
-import MenuScene from "./scenes/MenuScene";
-import GameScene from "./scenes/GameScene";
+
 import StageManager from "./StageManager";
+import { MainScene } from "./scenes/main/MainScene";
+import MenuScene from "./scenes/menu/MenuScene";
 export default class Game {
   renderer: WebGLRenderer;
   private isPaused: boolean = false;
@@ -15,7 +16,7 @@ export default class Game {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     this.stageManager = new StageManager(renderer);
-    this.stageManager.register("game", GameScene);
+    this.stageManager.register("game", MainScene);
     this.stageManager.register("menu", MenuScene);
     const menuScene = this.stageManager.getScene("menu") as MenuScene;
     menuScene.onStartGame(() => {

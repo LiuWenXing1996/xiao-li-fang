@@ -14,15 +14,15 @@ import {
   Vector3,
   WebGLRenderer,
 } from "three";
-import { Board } from "../Board";
-import { SceneBase } from "../SceneBase";
-import UI from "../UI";
-import Polyomino from "../Polyomino";
-import type PolyominoCube from "../PolyominoCube";
-import { GlobalConfig } from "../GlobalConfig";
-import { GameEvent } from "../types";
+import { Board } from "../../Board";
+import { GameObject3D } from "../../GameObject3D";
+import { GlobalConfig } from "../../GlobalConfig";
+import Polyomino from "../../Polyomino";
+import type PolyominoCube from "../../PolyominoCube";
+import { GameEvent } from "../../types";
+import UI from "../../UI";
 
-export default class GameScene extends SceneBase<PerspectiveCamera> {
+export class MainSceneController extends GameObject3D {
   board: Board;
   scoreUI: UI;
   score: number = 0;
@@ -30,9 +30,8 @@ export default class GameScene extends SceneBase<PerspectiveCamera> {
   private touchStartY: number = 0;
   private isDragging: boolean = false;
   pauseUI: UI;
-  constructor(renderer: WebGLRenderer) {
-    super(renderer);
-    this.background = new Color(0x1a1a2e);
+  constructor() {
+    super();
     this.board = new Board(10);
     this.add(this.board);
     this.scoreUI = new UI();
@@ -40,10 +39,17 @@ export default class GameScene extends SceneBase<PerspectiveCamera> {
     this.pauseUI = new UI();
     this.pauseUI.position.set(0, 15, -5);
     this.add(this.pauseUI);
-    this(GameEvent.AddScore, (event) => {
+    this.addClickListenerCustom(GameEvent.AddScore, (event) => {
       this.score += event.score;
       this.scoreUI.drawUI(`Score: ${this.score}`, "#0000ff");
     });
+    this.board.splitCube();
+    this.pauseUI.drawUI("Pause", "#0000ff");
+    this.pauseUI.addClickListenerCustom(GameEvent.Click, () => {
+      console.log("Pause");
+    });
+    this.scoreUI.position.set(0, 15, 0);
+    this.scoreUI.drawUI(`Score: ${this.score}`, "#0000ff");
   }
   initCamera() {
     const camera = new PerspectiveCamera(
@@ -57,186 +63,179 @@ export default class GameScene extends SceneBase<PerspectiveCamera> {
     return camera;
   }
   init(): void {
-    this.board.splitCube();
-    this.pauseUI.drawUI("Pause", "#0000ff");
-    this.pauseUI.addClickListenerCustom(GameEvent.Click, () => {
-      console.log("Pause");
-    });
-    this.scoreUI.position.set(0, 15, 0);
-    this.scoreUI.drawUI(`Score: ${this.score}`, "#0000ff");
-    const canvas = this.renderer.domElement;
+    // const canvas = this.renderer.domElement;
     // 添加触摸事件监听
-    this.setupTouchEvents(canvas);
+    // this.setupTouchEvents(canvas);
   }
   update(delta: number): void {}
-  private setupTouchEvents(canvas: HTMLCanvasElement) {
-    // 触摸开始
-    canvas.addEventListener(
-      "touchstart",
-      (event) => {
-        event.preventDefault();
-        const touch = event.touches[0];
-        this.touchStartX = touch.clientX;
-        this.touchStartY = touch.clientY;
-        this.isDragging = true;
-      },
-      { passive: false },
-    );
+  //   private setupTouchEvents(canvas: HTMLCanvasElement) {
+  //     // 触摸开始
+  //     canvas.addEventListener(
+  //       "touchstart",
+  //       (event) => {
+  //         event.preventDefault();
+  //         const touch = event.touches[0];
+  //         this.touchStartX = touch.clientX;
+  //         this.touchStartY = touch.clientY;
+  //         this.isDragging = true;
+  //       },
+  //       { passive: false },
+  //     );
 
-    // 触摸移动
-    canvas.addEventListener(
-      "touchmove",
-      (event) => {
-        event.preventDefault();
-        if (!this.isDragging) return;
+  //     // 触摸移动
+  //     canvas.addEventListener(
+  //       "touchmove",
+  //       (event) => {
+  //         event.preventDefault();
+  //         if (!this.isDragging) return;
 
-        const touch = event.touches[0];
-        const deltaX = touch.clientX - this.touchStartX;
-        const deltaY = touch.clientY - this.touchStartY;
+  //         const touch = event.touches[0];
+  //         const deltaX = touch.clientX - this.touchStartX;
+  //         const deltaY = touch.clientY - this.touchStartY;
 
-        const rotationSpeed = 0.01;
+  //         const rotationSpeed = 0.01;
 
-        const cameraRight = new Vector3();
-        const cameraUp = new Vector3();
-        this.camera.matrix.extractBasis(cameraRight, cameraUp, new Vector3());
+  //         const cameraRight = new Vector3();
+  //         const cameraUp = new Vector3();
+  //         this.camera.matrix.extractBasis(cameraRight, cameraUp, new Vector3());
 
-        this.board.rotation.y += deltaX * rotationSpeed;
+  //         this.board.rotation.y += deltaX * rotationSpeed;
 
-        const rightRotation = new Quaternion().setFromAxisAngle(
-          cameraRight,
-          deltaY * rotationSpeed,
-        );
-        this.board.quaternion.premultiply(rightRotation);
+  //         const rightRotation = new Quaternion().setFromAxisAngle(
+  //           cameraRight,
+  //           deltaY * rotationSpeed,
+  //         );
+  //         this.board.quaternion.premultiply(rightRotation);
 
-        const euler = new Euler().setFromQuaternion(this.board.quaternion);
-        euler.x = MathUtils.clamp(euler.x, -Math.PI / 2, Math.PI / 2);
-        this.board.quaternion.setFromEuler(euler);
+  //         const euler = new Euler().setFromQuaternion(this.board.quaternion);
+  //         euler.x = MathUtils.clamp(euler.x, -Math.PI / 2, Math.PI / 2);
+  //         this.board.quaternion.setFromEuler(euler);
 
-        this.touchStartX = touch.clientX;
-        this.touchStartY = touch.clientY;
-      },
-      { passive: false },
-    );
+  //         this.touchStartX = touch.clientX;
+  //         this.touchStartY = touch.clientY;
+  //       },
+  //       { passive: false },
+  //     );
 
-    // 触摸结束
-    canvas.addEventListener(
-      "touchend",
-      (event) => {
-        event.preventDefault();
-        this.isDragging = false;
-      },
-      { passive: false },
-    );
+  //     // 触摸结束
+  //     canvas.addEventListener(
+  //       "touchend",
+  //       (event) => {
+  //         event.preventDefault();
+  //         this.isDragging = false;
+  //       },
+  //       { passive: false },
+  //     );
 
-    // 鼠标事件支持
-    canvas.addEventListener("mousedown", (event) => {
-      this.touchStartX = event.clientX;
-      this.touchStartY = event.clientY;
-      this.isDragging = true;
-    });
+  //     // 鼠标事件支持
+  //     canvas.addEventListener("mousedown", (event) => {
+  //       this.touchStartX = event.clientX;
+  //       this.touchStartY = event.clientY;
+  //       this.isDragging = true;
+  //     });
 
-    canvas.addEventListener("mousemove", (event) => {
-      if (!this.isDragging) return;
+  //     canvas.addEventListener("mousemove", (event) => {
+  //       if (!this.isDragging) return;
 
-      const deltaX = event.clientX - this.touchStartX;
-      const deltaY = event.clientY - this.touchStartY;
+  //       const deltaX = event.clientX - this.touchStartX;
+  //       const deltaY = event.clientY - this.touchStartY;
 
-      const rotationSpeed = 0.01;
+  //       const rotationSpeed = 0.01;
 
-      const cameraRight = new Vector3();
-      const cameraUp = new Vector3();
-      this.camera.matrix.extractBasis(cameraRight, cameraUp, new Vector3());
+  //       const cameraRight = new Vector3();
+  //       const cameraUp = new Vector3();
+  //       this.camera.matrix.extractBasis(cameraRight, cameraUp, new Vector3());
 
-      this.board.rotation.y += deltaX * rotationSpeed;
+  //       this.board.rotation.y += deltaX * rotationSpeed;
 
-      const rightRotation = new Quaternion().setFromAxisAngle(
-        cameraRight,
-        deltaY * rotationSpeed,
-      );
-      this.board.quaternion.premultiply(rightRotation);
+  //       const rightRotation = new Quaternion().setFromAxisAngle(
+  //         cameraRight,
+  //         deltaY * rotationSpeed,
+  //       );
+  //       this.board.quaternion.premultiply(rightRotation);
 
-      const euler = new Euler().setFromQuaternion(this.board.quaternion);
-      euler.x = MathUtils.clamp(euler.x, -Math.PI / 2, Math.PI / 2);
-      this.board.quaternion.setFromEuler(euler);
+  //       const euler = new Euler().setFromQuaternion(this.board.quaternion);
+  //       euler.x = MathUtils.clamp(euler.x, -Math.PI / 2, Math.PI / 2);
+  //       this.board.quaternion.setFromEuler(euler);
 
-      this.touchStartX = event.clientX;
-      this.touchStartY = event.clientY;
-    });
+  //       this.touchStartX = event.clientX;
+  //       this.touchStartY = event.clientY;
+  //     });
 
-    canvas.addEventListener("mouseup", () => {
-      this.isDragging = false;
-    });
+  //     canvas.addEventListener("mouseup", () => {
+  //       this.isDragging = false;
+  //     });
 
-    canvas.addEventListener("mouseleave", () => {
-      this.isDragging = false;
-    });
+  //     canvas.addEventListener("mouseleave", () => {
+  //       this.isDragging = false;
+  //     });
 
-    // 点击选中 Polyomino
-    canvas.addEventListener("click", (event) => {
-      this.handleClick(event);
-    });
-  }
+  //     // 点击选中 Polyomino
+  //     canvas.addEventListener("click", (event) => {
+  //       this.handleClick(event);
+  //     });
+  //   }
 
-  private handleClick(event: MouseEvent): void {
-    const raycaster = new Raycaster();
-    const mouse = new Vector2();
+  //   private handleClick(event: MouseEvent): void {
+  //     const raycaster = new Raycaster();
+  //     const mouse = new Vector2();
 
-    const rect = this.renderer.domElement.getBoundingClientRect();
-    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  //     const rect = this.renderer.domElement.getBoundingClientRect();
+  //     mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  //     mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
-    raycaster.setFromCamera(mouse, this.camera);
+  //     raycaster.setFromCamera(mouse, this.camera);
 
-    // 收集所有 Mesh（包括白色积木）
-    const meshes: Object3D[] = [];
-    this.board.polyominoList.traverse((child) => {
-      if (child.type === "Mesh") {
-        meshes.push(child);
-      }
-    });
+  //     // 收集所有 Mesh（包括白色积木）
+  //     const meshes: Object3D[] = [];
+  //     this.board.polyominoList.traverse((child) => {
+  //       if (child.type === "Mesh") {
+  //         meshes.push(child);
+  //       }
+  //     });
 
-    const intersects = raycaster.intersectObjects(meshes);
+  //     const intersects = raycaster.intersectObjects(meshes);
 
-    // 从最近的开始检查，跳过白色积木
-    let clickedPolyomino: Polyomino | null = null;
-    for (const intersect of intersects) {
-      const clickedMesh = intersect.object;
-      let parent = clickedMesh.parent;
-      if (parent) {
-        parent = parent.parent;
-      }
+  //     // 从最近的开始检查，跳过白色积木
+  //     let clickedPolyomino: Polyomino | null = null;
+  //     for (const intersect of intersects) {
+  //       const clickedMesh = intersect.object;
+  //       let parent = clickedMesh.parent;
+  //       if (parent) {
+  //         parent = parent.parent;
+  //       }
 
-      if (parent instanceof Polyomino) {
-        if (parent.isQuestion) {
-          // 如果是白色积木，直接退出检查（不穿透）
-          return;
-        }
-        clickedPolyomino = parent;
-        break;
-        // 如果是白色积木，继续检查下一个
-      }
-    }
+  //       if (parent instanceof Polyomino) {
+  //         if (parent.isQuestion) {
+  //           // 如果是白色积木，直接退出检查（不穿透）
+  //           return;
+  //         }
+  //         clickedPolyomino = parent;
+  //         break;
+  //         // 如果是白色积木，继续检查下一个
+  //       }
+  //     }
 
-    if (clickedPolyomino) {
-      if (clickedPolyomino.getSelected()) {
-        this.removePolyomino(clickedPolyomino);
-      } else {
-        this.board.polyominoList.traverse((child) => {
-          if (child instanceof Polyomino) {
-            child.setSelected(false);
-          }
-        });
-        clickedPolyomino.setSelected(true);
-      }
-    } else {
-      // 点击空白处或白色积木，取消所有选中
-      this.board.polyominoList.traverse((child) => {
-        if (child instanceof Polyomino) {
-          child.setSelected(false);
-        }
-      });
-    }
-  }
+  //     if (clickedPolyomino) {
+  //       if (clickedPolyomino.getSelected()) {
+  //         this.removePolyomino(clickedPolyomino);
+  //       } else {
+  //         this.board.polyominoList.traverse((child) => {
+  //           if (child instanceof Polyomino) {
+  //             child.setSelected(false);
+  //           }
+  //         });
+  //         clickedPolyomino.setSelected(true);
+  //       }
+  //     } else {
+  //       // 点击空白处或白色积木，取消所有选中
+  //       this.board.polyominoList.traverse((child) => {
+  //         if (child instanceof Polyomino) {
+  //           child.setSelected(false);
+  //         }
+  //       });
+  //     }
+  //   }
   // 修改 removePolyomino 方法
   private removePolyomino(polyomino: Polyomino): void {
     const cubeCount = polyomino.cubeList.length;
