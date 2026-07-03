@@ -57,16 +57,19 @@ export default class Polyomino extends GameObject3D {
       this.cubeList.push(cube);
       this.originalColors.push(baseColor.clone());
     }
-    this.addClickListenerCustom(GameEvent.Click, () => {
-      console.log("点击积木");
-      if (!this.isSelected) {
-        this.setSelected(true);
+    // TODO：点击其他积木时，取消选中当前积木
+    this.addClickListenerCustom(GameEvent.Click, (event) => {
+      if (event.hit.object === this) {
+        if (!this.isSelected) {
+          this.setSelected(true);
+        } else {
+          this.removeFromParent();
+        }
       } else {
-        this.removeFromParent();
+        this.setSelected(false);
       }
     });
     this.addClickListenerCustom(GameEvent.ClickEmpty, () => {
-      console.log("点击空白");
       this.setSelected(false);
       return true;
     });

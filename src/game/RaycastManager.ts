@@ -150,7 +150,7 @@ export class RaycastManager {
         for (const obj of allActiveObjects) {
           if (obj._eventPipeline.has(GameEvent.ClickEmpty)) {
             obj.emitBubbleEvent(GameEvent.ClickEmpty, { pointerEvent: event });
-            break; // 确保只投递给全场景中第一个注册了 ClickEmpty 的大脑
+            // break; // 确保只投递给全场景中第一个注册了 ClickEmpty 的大脑
           }
         }
       }
@@ -216,6 +216,6 @@ export class RaycastManager {
     this.domElement.removeEventListener("pointerup", this.onPointerUp);
 
     // 清空全局扁平更新表
-    UpdateRegistry.clear();
+    // UpdateRegistry.clear();
   }
 }

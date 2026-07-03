@@ -40,10 +40,10 @@ export default class GameScene extends SceneBase<PerspectiveCamera> {
     this.pauseUI = new UI();
     this.pauseUI.position.set(0, 15, -5);
     this.add(this.pauseUI);
-    this(GameEvent.AddScore, (event) => {
-      this.score += event.score;
-      this.scoreUI.drawUI(`Score: ${this.score}`, "#0000ff");
-    });
+    // this.add(GameEvent.AddScore, (event) => {
+    //   this.score += event.score;
+    //   this.scoreUI.drawUI(`Score: ${this.score}`, "#0000ff");
+    // });
   }
   initCamera() {
     const camera = new PerspectiveCamera(

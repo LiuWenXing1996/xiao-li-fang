@@ -10,6 +10,7 @@ export default class StageManager {
   renderer: WebGLRenderer;
   scenes: Record<string, SceneBase> = {};
   currentScene: SceneBase | null = null;
+  raycastManager: RaycastManager | null = null;
 
   constructor(renderer: WebGLRenderer) {
     this.renderer = renderer;
@@ -18,24 +19,32 @@ export default class StageManager {
   // 注册场景
   register(key: string, SceneClass: SceneConstructor): void {
     const instance = new SceneClass(this.renderer);
-    new RaycastManager(instance, instance.camera, this.renderer.domElement);
     instance.init();
     this.scenes[key] = instance;
   }
 
   // 切换场景
   switchScene(key: string): void {
+    // 销毁旧的 RaycastManager
+    if (this.raycastManager) {
+      this.raycastManager.dispose();
+      this.raycastManager = null;
+    }
+
     const targetScene = this.scenes[key];
     if (!targetScene) {
       console.warn(`Scene with key "${key}" not found.`);
       return;
     }
-
     if (this.currentScene) {
       this.currentScene.deactivate();
     }
-
     this.currentScene = targetScene;
+    this.raycastManager = new RaycastManager(
+      this.currentScene,
+      this.currentScene.camera,
+      this.renderer.domElement,
+    );
     this.currentScene.activate();
   }
   resizeRendererToDisplaySize(renderer: WebGLRenderer) {
