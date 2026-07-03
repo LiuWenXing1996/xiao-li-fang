@@ -18,6 +18,7 @@ import {
 import { Board } from "./Board";
 import Polyomino from "./Polyomino";
 import type PolyominoCube from "./PolyominoCube";
+import UI from "./UI";
 
 export default class Game {
   scene: Scene;
@@ -46,6 +47,28 @@ export default class Game {
     this.board = new Board(10);
     scene.add(this.board);
     this.board.splitCube();
+    const ui = new UI();
+    scene.add(ui);
+    ui.bindCamera(this.camera);
+    ui.position.set(0, 15, 0);
+    ui.drawUI("Some text to be displayed", "#0000ff");
+
+    // const container = new ThreeMeshUI.Block({
+    //   width: 1.2,
+    //   height: 0.7,
+    //   padding: 0.2,
+    //   fontFamily: RobotoMSDFJSON,
+    //   fontTexture: RobotoMSDFPNG,
+    // });
+    // const text = new ThreeMeshUI.Text({
+    //   content: "Some text to be displayed",
+    // });
+
+    // container.add(text);
+    // container.position.set(0, 0, 0);
+
+    // // scene is a THREE.Scene (see three.js)
+    // scene.add(container);
 
     // 添加触摸事件监听
     this.setupTouchEvents(canvas);
@@ -71,6 +94,8 @@ export default class Game {
       if (!game.isPaused) {
         game.update(time);
       }
+      // ThreeMeshUI.update();
+      ui.update();
       renderer.render(scene, camera);
     }
     renderer.setAnimationLoop(animate);

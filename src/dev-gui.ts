@@ -1,9 +1,8 @@
 import GUI from "lil-gui";
 import type Game from "./game/index.ts";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
-import { GridHelper, Vector3 } from "three";
+import { GridHelper } from "three";
 import CustomAxesHelper from "./game/CustomAxesHelper";
-import CubeSplitter from "./game/CubeSplitter.ts";
 
 const gui = new GUI({
   title: "积木开发测试",
