@@ -17,7 +17,8 @@ export class Board extends Object3D {
     this.cubeSplitter = new CubeSplitter();
   }
   splitCube() {
-    const polyominoList = this.cubeSplitter.split(6, 10);
+    const cubeSize = 6; // 实际立方体大小
+    const polyominoList = this.cubeSplitter.split(cubeSize, 10);
     polyominoList.map((p) => {
       const polyomino = new Polyomino({
         cubes: p.blocks.map((e) => {
@@ -37,5 +38,9 @@ export class Board extends Object3D {
       // polyomino.scale.set(0.5, 0.5, 0.5);
       this.polyominoList.add(polyomino);
     });
+    // 将 polyominoList 平移，使立方体中心位于原点
+    // 立方体位置从 (0,0,0) 到 (cubeSize-1,cubeSize-1,cubeSize-1)，中心在 ((cubeSize-1)/2, (cubeSize-1)/2, (cubeSize-1)/2)
+    const offset = (cubeSize - 1) / 2;
+    this.polyominoList.position.set(-offset, -offset, -offset);
   }
 }
