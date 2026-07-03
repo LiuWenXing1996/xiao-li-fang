@@ -1,3 +1,4 @@
+import mitt from "mitt";
 import {
   Camera,
   CanvasTexture,
@@ -6,35 +7,49 @@ import {
   MeshBasicMaterial,
   Object3D,
   PlaneGeometry,
+  Scene,
+  Sprite,
+  SpriteMaterial,
   Vector3,
+  WebGLRenderer,
 } from "three";
-
-export default class UI extends Object3D {
+import {
+  InteractiveObject3D,
+  type MeshClickEvent,
+} from "./InteractiveObject3D";
+export const UIEvents = {
+  CLICK: "CLICK",
+};
+export default class UI extends InteractiveObject3D {
+  private emitter = mitt();
   offscreenCanvas: HTMLCanvasElement;
   private camera: Camera | null = null;
   uiTexture: CanvasTexture<HTMLCanvasElement>;
-
+  private offset = new Vector3(0, 0, -5);
   constructor() {
     super();
     //创建并初始化离屏 Canvas UI
+    // TODO:将 DOM 操作封装下，方便 Wrapper
     this.offscreenCanvas = document.createElement("canvas");
     this.offscreenCanvas.width = 512;
     this.offscreenCanvas.height = 512;
     const uiTexture = new CanvasTexture(this.offscreenCanvas);
-    const uiMaterial = new MeshBasicMaterial({
+    const uiMaterial = new SpriteMaterial({
       map: uiTexture,
       transparent: true,
-      side: DoubleSide,
     });
-
-    const uiGeometry = new PlaneGeometry(2, 2);
-    const uiMesh: Mesh<PlaneGeometry, MeshBasicMaterial> = new Mesh(
-      uiGeometry,
-      uiMaterial,
-    );
+    const uiSprite = new Sprite(uiMaterial);
+    uiSprite.position.set(0, 0, 0);
+    uiSprite.scale.set(4, 4, 1);
+    // const uiGeometry = new PlaneGeometry(2, 2);
+    // const uiMesh: Mesh<PlaneGeometry, MeshBasicMaterial> = new Mesh(
+    //   uiGeometry,
+    //   uiMaterial,
+    // );
     this.uiTexture = uiTexture;
-    this.add(uiMesh);
+    this.add(uiSprite);
   }
+  setupClickHandler(): void {}
   drawUI(text: string, color: string): void {
     const context = this.offscreenCanvas.getContext("2d");
     if (!context) {
@@ -66,24 +81,8 @@ export default class UI extends Object3D {
   bindCamera(camera: Camera): void {
     this.camera = camera;
   }
-  // 更新位置（在渲染循环中调用）
-  update(): void {
-    if (!this.camera) return;
 
-    // // 获取摄像机的位置和方向
-    // const cameraPosition = this.camera.position.clone();
-    // const cameraDirection = new Vector3();
-    // this.camera.getWorldDirection(cameraDirection);
-
-    // // 计算 UI 位置：摄像机位置 - 摄像机方向 × 偏移距离
-    // // const uiPosition = cameraPosition.sub(
-    // //   cameraDirection.multiplyScalar(this.offset.length()),
-    // // );
-
-    // // 设置 UI 位置
-    // // this.position.copy(uiPosition);
-
-    // 让 UI 面向摄像机
-    this.lookAt(this.camera.position);
+  setOffset(distance: number): void {
+    this.offset.z = -distance;
   }
 }

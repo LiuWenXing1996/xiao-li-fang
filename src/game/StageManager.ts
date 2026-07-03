@@ -1,11 +1,12 @@
 import { PerspectiveCamera, WebGLRenderer } from "three";
 import { SceneBase } from "./SceneBase";
 import { GlobalConfig } from "./GlobalConfig";
+import { RaycastManager } from "./RaycastManager";
 
 // 定义场景类构造函数的类型签名
 type SceneConstructor = new (renderer: WebGLRenderer) => SceneBase;
 
-export class StageManager {
+export default class StageManager {
   renderer: WebGLRenderer;
   scenes: Record<string, SceneBase> = {};
   currentScene: SceneBase | null = null;
@@ -17,6 +18,7 @@ export class StageManager {
   // 注册场景
   register(key: string, SceneClass: SceneConstructor): void {
     const instance = new SceneClass(this.renderer);
+    new RaycastManager(instance, instance.camera, this.renderer.domElement);
     instance.init();
     this.scenes[key] = instance;
   }

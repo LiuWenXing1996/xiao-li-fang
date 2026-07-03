@@ -1,3 +1,5 @@
+import { WebGLRenderer, type Object3D } from "three";
+
 // 预定义的友好颜色列表（高对比度、对人眼友好）
 export const COLORS = [
   // 红色系
@@ -51,4 +53,32 @@ export function randomColor(): string {
 
 export function resetColorIndex(): void {
   colorIndex = 0;
+}
+
+export function createCanvasFinder() {
+  let canvasCache: HTMLCanvasElement | null = null;
+  // 最多查找 10 次
+  let maxFindCount = 10;
+  let findCount = 0;
+  const finder = (node: Object3D) => {
+    if (canvasCache) {
+      return canvasCache;
+    }
+    findCount++;
+    if (findCount > maxFindCount) {
+      return canvasCache;
+    }
+    let root = node;
+    let depth = 0;
+    // 最多查找 100 层父节点
+    while (root.parent !== null && depth < 100) {
+      root = root.parent;
+      depth++;
+    }
+    if (root && root instanceof WebGLRenderer) {
+      canvasCache = root.domElement;
+    }
+    return canvasCache;
+  };
+  return finder;
 }

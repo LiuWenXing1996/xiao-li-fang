@@ -36,18 +36,11 @@ export default class MenuScene extends SceneBase<PerspectiveCamera> {
   }
   init() {
     this.startUi.bindCamera(this.camera);
-    this.setupClickHandler();
-  }
-  update(delta: number): void {
-    this.startUi.update();
-  }
-  setupClickHandler(): void {
-    this.canvas.addEventListener("click", (event) => {
-      if (this.isClickOnStartButton(event)) {
-        this.emitter.emit(MenuSceneEvents.START_GAME);
-      }
+    this.startUi.addClickListener(() => {
+      this.emitter.emit(MenuSceneEvents.START_GAME);
     });
   }
+  update(delta: number): void {}
   onStartGame(callback: () => void): void {
     this.emitter.on(MenuSceneEvents.START_GAME, callback);
   }

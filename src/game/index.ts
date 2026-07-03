@@ -2,8 +2,7 @@ import { WebGLRenderer } from "three";
 import UI from "./UI";
 import MenuScene from "./scenes/MenuScene";
 import GameScene from "./scenes/GameScene";
-import { StageManager } from "./StageManager";
-
+import StageManager from "./StageManager";
 export default class Game {
   renderer: WebGLRenderer;
   private isPaused: boolean = false;

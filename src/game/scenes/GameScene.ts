@@ -7,11 +7,9 @@ import {
   Mesh,
   MeshBasicMaterial,
   Object3D,
-  OrthographicCamera,
   PerspectiveCamera,
   Quaternion,
   Raycaster,
-  Scene,
   Vector2,
   Vector3,
   WebGLRenderer,
@@ -30,6 +28,7 @@ export default class GameScene extends SceneBase<PerspectiveCamera> {
   private touchStartX: number = 0;
   private touchStartY: number = 0;
   private isDragging: boolean = false;
+  pauseUI: UI;
   constructor(renderer: WebGLRenderer) {
     super(renderer);
     this.background = new Color(0x1a1a2e);
@@ -37,6 +36,9 @@ export default class GameScene extends SceneBase<PerspectiveCamera> {
     this.add(this.board);
     this.scoreUI = new UI();
     this.add(this.scoreUI);
+    this.pauseUI = new UI();
+    this.pauseUI.position.set(0, 15, -5);
+    this.add(this.pauseUI);
   }
   initCamera() {
     const camera = new PerspectiveCamera(
@@ -54,15 +56,18 @@ export default class GameScene extends SceneBase<PerspectiveCamera> {
     if (this.camera) {
       this.scoreUI.bindCamera(this.camera);
     }
+    this.pauseUI.bindCamera(this.camera);
+    this.pauseUI.drawUI("Pause", "#0000ff");
+    this.pauseUI.addClickListener(() => {
+      console.log("Pause");
+    });
     this.scoreUI.position.set(0, 15, 0);
     this.scoreUI.drawUI(`Score: ${this.score}`, "#0000ff");
     const canvas = this.renderer.domElement;
     // 添加触摸事件监听
     this.setupTouchEvents(canvas);
   }
-  update(delta: number): void {
-    this.scoreUI.update();
-  }
+  update(delta: number): void {}
   private setupTouchEvents(canvas: HTMLCanvasElement) {
     // 触摸开始
     canvas.addEventListener(
