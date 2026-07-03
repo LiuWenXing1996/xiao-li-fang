@@ -16,44 +16,44 @@ gui.domElement.style.maxHeight = "500px";
 export const addSceneGui = (game: Game) => {
   const folder = gui.addFolder("场景管理");
   // 支持自由视角切换
-  {
-    const controls = new OrbitControls(game.camera, game.renderer.domElement);
-    controls.enabled = false;
-    folder
-      .add({ controlsEnabled: false }, "controlsEnabled")
-      .name("开启自由视角")
-      .onChange((value: boolean) => {
-        controls.enabled = value;
-        if (!value) {
-          controls.reset();
-        }
-      });
-  }
+  // {
+  //   const controls = new OrbitControls(game.camera, game.renderer.domElement);
+  //   controls.enabled = false;
+  //   folder
+  //     .add({ controlsEnabled: false }, "controlsEnabled")
+  //     .name("开启自由视角")
+  //     .onChange((value: boolean) => {
+  //       controls.enabled = value;
+  //       if (!value) {
+  //         controls.reset();
+  //       }
+  //     });
+  // }
   // 显示坐标轴
-  {
-    const axesHelper = new CustomAxesHelper();
-    // axesHelper.setColors("red", "green", "blue"); // 设置坐标轴颜色
-    axesHelper.visible = false;
-    game.scene.add(axesHelper);
-    folder
-      .add({ axisHelperVisible: false }, "axisHelperVisible")
-      .name("显示坐标轴")
-      .onChange((value: boolean) => {
-        axesHelper.visible = value;
-      });
-  }
+  // {
+  //   const axesHelper = new CustomAxesHelper();
+  //   // axesHelper.setColors("red", "green", "blue"); // 设置坐标轴颜色
+  //   axesHelper.visible = false;
+  //   game.scene.add(axesHelper);
+  //   folder
+  //     .add({ axisHelperVisible: false }, "axisHelperVisible")
+  //     .name("显示坐标轴")
+  //     .onChange((value: boolean) => {
+  //       axesHelper.visible = value;
+  //     });
+  // }
   // 显示网格线
-  {
-    const gridHelper = new GridHelper(100, 100);
-    gridHelper.visible = false;
-    game.scene.add(gridHelper);
-    folder
-      .add({ gridHelperVisible: false }, "gridHelperVisible")
-      .name("显示网格线")
-      .onChange((value: boolean) => {
-        gridHelper.visible = value;
-      });
-  }
+  // {
+  //   const gridHelper = new GridHelper(100, 100);
+  //   gridHelper.visible = false;
+  //   game.scene.add(gridHelper);
+  //   folder
+  //     .add({ gridHelperVisible: false }, "gridHelperVisible")
+  //     .name("显示网格线")
+  //     .onChange((value: boolean) => {
+  //       gridHelper.visible = value;
+  //     });
+  // }
 };
 export const addCubeGui = (game: Game) => {
   const folder = gui.addFolder("积块调试");
@@ -63,7 +63,7 @@ export const addCubeGui = (game: Game) => {
       .add(
         {
           split: () => {
-            game.board.splitCube();
+            // game.board.splitCube();
           },
         },
         "split",
