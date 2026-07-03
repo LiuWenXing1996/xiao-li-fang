@@ -10,6 +10,10 @@ import {
   Euler,
   Raycaster,
   Object3D,
+  Mesh,
+  MeshBasicMaterial,
+  LineSegments,
+  LineBasicMaterial,
 } from "three";
 import { Board } from "./Board";
 import Polyomino from "./Polyomino";
@@ -208,21 +212,50 @@ export default class Game {
       if (parent instanceof Polyomino) {
         const clickedPolyomino = parent;
 
-        this.board.polyominoList.traverse((child) => {
-          if (child instanceof Polyomino) {
-            child.setSelected(false);
-          }
-        });
+        // 如果已经选中，移除它
+        if (clickedPolyomino.getSelected()) {
+          this.removePolyomino(clickedPolyomino);
+        } else {
+          // 取消之前选中的 Polyomino
+          this.board.polyominoList.traverse((child) => {
+            if (child instanceof Polyomino) {
+              child.setSelected(false);
+            }
+          });
 
-        clickedPolyomino.setSelected(true);
+          // 选中当前点击的 Polyomino
+          clickedPolyomino.setSelected(true);
+        }
       }
     } else {
+      // 点击空白处，取消所有选中
       this.board.polyominoList.traverse((child) => {
         if (child instanceof Polyomino) {
           child.setSelected(false);
         }
       });
     }
+  }
+
+  // 移除 Polyomino
+  private removePolyomino(polyomino: Polyomino): void {
+    // 清理资源
+    polyomino.traverse((child) => {
+      if (child instanceof Mesh) {
+        child.geometry.dispose();
+        if (child.material instanceof MeshBasicMaterial) {
+          child.material.dispose();
+        }
+      } else if (child instanceof LineSegments) {
+        child.geometry.dispose();
+        if (child.material instanceof LineBasicMaterial) {
+          child.material.dispose();
+        }
+      }
+    });
+
+    // 从父容器中移除
+    polyomino.parent?.remove(polyomino);
   }
 
   start() {}
