@@ -61,4 +61,7 @@ export class StageManager {
       this.renderer.render(this.currentScene, this.currentScene.camera);
     }
   }
+  getScene(key: string): SceneBase | null {
+    return this.scenes[key] || null;
+  }
 }

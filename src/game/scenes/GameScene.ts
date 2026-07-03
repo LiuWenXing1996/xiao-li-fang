@@ -21,9 +21,9 @@ import { SceneBase } from "../SceneBase";
 import UI from "../UI";
 import Polyomino from "../Polyomino";
 import type PolyominoCube from "../PolyominoCube";
+import { GlobalConfig } from "../GlobalConfig";
 
 export default class GameScene extends SceneBase<PerspectiveCamera> {
-  private targetAspect: number = 9 / 16;
   board: Board;
   scoreUI: UI;
   score: number = 0;
@@ -39,7 +39,12 @@ export default class GameScene extends SceneBase<PerspectiveCamera> {
     this.add(this.scoreUI);
   }
   initCamera() {
-    const camera = new PerspectiveCamera(45, this.targetAspect, 0.1, 3000);
+    const camera = new PerspectiveCamera(
+      45,
+      GlobalConfig.targetAspect,
+      0.1,
+      3000,
+    );
     camera.position.set(25, 25, 25);
     camera.lookAt(0, 0, 0);
     return camera;

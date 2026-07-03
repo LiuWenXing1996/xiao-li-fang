@@ -14,6 +14,9 @@ importers:
       lil-gui:
         specifier: ^0.21.0
         version: 0.21.0
+      mitt:
+        specifier: ^3.0.1
+        version: 3.0.1
       three:
         specifier: ^0.185.1
         version: 0.185.1
@@ -338,6 +341,9 @@ packages:
 
   meshoptimizer@1.1.1:
     resolution: {integrity: sha512-oRFNWJRDA/WTrVj7NWvqa5HqE1t9MYDj2VaWirQCzCCrAd2GHrqR/sQezCxiWATPNlKTcRaPRHPJwIRoPBAp5g==}
+
+  mitt@3.0.1:
+    resolution: {integrity: sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==}
 
   nanoid@3.3.15:
     resolution: {integrity: sha512-y7Wygv/7mEOvxTuEQDB8StXdMRBWf1kR/tlhAzBRUFkB2jfcLOAxO/SHmOO2zgz1pVgK29/kyupn059/bCHdjA==}
@@ -732,6 +738,8 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.5
 
   meshoptimizer@1.1.1: {}
+
+  mitt@3.0.1: {}
 
   nanoid@3.3.15: {}
 

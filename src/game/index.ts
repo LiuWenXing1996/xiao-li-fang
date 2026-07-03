@@ -18,7 +18,11 @@ export default class Game {
     this.stageManager = new StageManager(renderer);
     this.stageManager.register("game", GameScene);
     this.stageManager.register("menu", MenuScene);
-    this.stageManager.switchScene("game");
+    const menuScene = this.stageManager.getScene("menu") as MenuScene;
+    menuScene.onStartGame(() => {
+      this.stageManager.switchScene("game");
+    });
+    this.stageManager.switchScene("menu");
     this.renderer = renderer;
     renderer.setAnimationLoop(this.animate.bind(this));
   }

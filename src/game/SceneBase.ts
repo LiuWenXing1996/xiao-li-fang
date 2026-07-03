@@ -13,11 +13,13 @@ export abstract class SceneBase<T extends Camera = Camera> extends Scene {
   get camera() {
     return this._camera as T;
   }
-  // 获取相机
+  get canvas() {
+    return this.renderer.domElement;
+  }
+  // 初始化相机
   abstract initCamera(): T;
   // 初始化逻辑
   abstract init(): void;
-
   // 每一帧的更新逻辑
   abstract update(delta: number): void;
   // 激活场景

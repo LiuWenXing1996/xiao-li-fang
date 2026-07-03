@@ -17,6 +17,7 @@
   "dependencies": {
     "es-toolkit": "^1.49.0",
     "lil-gui": "^0.21.0",
+    "mitt": "^3.0.1",
     "three": "^0.185.1"
   }
 }
