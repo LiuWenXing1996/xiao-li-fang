@@ -26,6 +26,8 @@ export default class Game {
   camera: PerspectiveCamera;
   private isPaused: boolean = false;
   board: Board;
+  score: number = 0;
+  scoreUI: UI = new UI();
   private touchStartX: number = 0;
   private touchStartY: number = 0;
   private isDragging: boolean = false;
@@ -47,29 +49,10 @@ export default class Game {
     this.board = new Board(10);
     scene.add(this.board);
     this.board.splitCube();
-    const ui = new UI();
-    scene.add(ui);
-    ui.bindCamera(this.camera);
-    ui.position.set(0, 15, 0);
-    ui.drawUI("Some text to be displayed", "#0000ff");
-
-    // const container = new ThreeMeshUI.Block({
-    //   width: 1.2,
-    //   height: 0.7,
-    //   padding: 0.2,
-    //   fontFamily: RobotoMSDFJSON,
-    //   fontTexture: RobotoMSDFPNG,
-    // });
-    // const text = new ThreeMeshUI.Text({
-    //   content: "Some text to be displayed",
-    // });
-
-    // container.add(text);
-    // container.position.set(0, 0, 0);
-
-    // // scene is a THREE.Scene (see three.js)
-    // scene.add(container);
-
+    scene.add(this.scoreUI);
+    this.scoreUI.bindCamera(this.camera);
+    this.scoreUI.position.set(0, 15, 0);
+    this.scoreUI.drawUI(`Score: ${this.score}`, "#0000ff");
     // 添加触摸事件监听
     this.setupTouchEvents(canvas);
 
@@ -85,6 +68,7 @@ export default class Game {
       return needResize;
     }
     const game = this;
+    const scoreUI = this.scoreUI;
 
     function animate(time: number) {
       if (resizeRendererToDisplaySize(renderer)) {
@@ -95,7 +79,7 @@ export default class Game {
         game.update(time);
       }
       // ThreeMeshUI.update();
-      ui.update();
+      scoreUI.update();
       renderer.render(scene, camera);
     }
     renderer.setAnimationLoop(animate);
@@ -270,10 +254,17 @@ export default class Game {
       });
     }
   }
+  updateScore() {
+    this.scoreUI.drawUI(`Score: ${this.score}`, "#0000ff");
+  }
 
   // 移除 Polyomino
   // 修改 removePolyomino 方法
   private removePolyomino(polyomino: Polyomino): void {
+    const cubeCount = polyomino.cubeList.length;
+    this.score += cubeCount;
+    this.updateScore();
+
     // 获取被移除积木的所有方块位置
     const removedPositions = new Set<string>();
     polyomino.cubeList.forEach((cube) => {

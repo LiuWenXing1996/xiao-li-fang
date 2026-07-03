@@ -12,6 +12,7 @@ import {
 export default class UI extends Object3D {
   offscreenCanvas: HTMLCanvasElement;
   private camera: Camera | null = null;
+  uiTexture: CanvasTexture<HTMLCanvasElement>;
 
   constructor() {
     super();
@@ -31,6 +32,7 @@ export default class UI extends Object3D {
       uiGeometry,
       uiMaterial,
     );
+    this.uiTexture = uiTexture;
     this.add(uiMesh);
   }
   drawUI(text: string, color: string): void {
@@ -55,10 +57,11 @@ export default class UI extends Object3D {
 
     // 绘制文本
     context.fillStyle = "#ffffff";
-    context.font = "bold 40px sans-serif";
+    context.font = "bold 80px sans-serif";
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.fillText(text, width / 2, height / 2);
+    this.uiTexture.needsUpdate = true;
   }
   bindCamera(camera: Camera): void {
     this.camera = camera;
