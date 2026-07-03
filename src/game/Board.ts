@@ -32,9 +32,9 @@ export class Board extends Object3D {
         }),
         color: randomColor(),
       });
-      polyomino.position.set(p.id, 0, 0);
+      // polyomino.position.set(p.id, 0, 0);
       // TODO:把他们并列排开，让用户可以滑动选择
-      polyomino.scale.set(0.5, 0.5, 0.5);
+      // polyomino.scale.set(0.5, 0.5, 0.5);
       this.polyominoList.add(polyomino);
     });
   }

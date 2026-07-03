@@ -28,6 +28,7 @@ export default class Game {
 
         this.board = new Board(10);
         scene.add(this.board);
+        this.board.splitCube();
 
         function resizeRendererToDisplaySize(renderer: WebGLRenderer) {
             const canvas = renderer.domElement;
