@@ -9,6 +9,7 @@ import {
   Color,
 } from "three";
 import PolyominoCube from "./PolyominoCube";
+import { InteractiveObject3D } from "./InteractiveObject3D";
 
 export interface PolyominoConfig {
   cubes: {
@@ -24,7 +25,7 @@ export interface PolyominoConfig {
   isQuestion?: boolean;
 }
 
-export default class Polyomino extends Object3D {
+export default class Polyomino extends InteractiveObject3D {
   cubeList: PolyominoCube[] = [];
   private isSelected: boolean = false;
   private highlightedEdges: Object3D[] = [];
@@ -55,6 +56,13 @@ export default class Polyomino extends Object3D {
       this.cubeList.push(cube);
       this.originalColors.push(baseColor.clone());
     }
+    this.addClickListener(() => {
+      if (!this.isSelected) {
+        this.setSelected(true);
+      } else {
+        
+      }
+    });
   }
 
   setSelected(selected: boolean): void {

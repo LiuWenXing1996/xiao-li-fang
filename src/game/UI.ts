@@ -1,7 +1,7 @@
 import { CanvasTexture, Sprite, SpriteMaterial } from "three";
-import { InteractiveObject3D } from "./InteractiveObject3D";
+import { GameObject3D } from "./GameObject3D";
 
-export default class UI extends InteractiveObject3D {
+export default class UI extends GameObject3D {
   offscreenCanvas: HTMLCanvasElement;
   uiTexture: CanvasTexture<HTMLCanvasElement>;
   constructor() {

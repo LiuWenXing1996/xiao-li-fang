@@ -9,6 +9,7 @@ import {
   CanvasTexture,
   type ColorRepresentation,
 } from "three";
+import { InteractiveObject3D } from "./InteractiveObject3D";
 
 export interface PolyominoCubeConfig {
   boxColor?: ColorRepresentation;
@@ -17,7 +18,7 @@ export interface PolyominoCubeConfig {
   isQuestion?: boolean;
 }
 
-export default class PolyominoCube extends Object3D {
+export default class PolyominoCube extends InteractiveObject3D {
   public readonly config: Readonly<PolyominoCubeConfig>;
   public isQuestionBlock: boolean = false; // 是否为问号块
   public isRevealed: boolean = false; // 是否已变色
@@ -36,7 +37,7 @@ export default class PolyominoCube extends Object3D {
     const displayColor = isQuestion ? "#FFFFFF" : boxColor;
 
     const boxGeometry = new BoxGeometry(1, 1, 1);
-    
+
     // 如果是问号块，创建带问号的材质
     let material: MeshBasicMaterial;
     if (isQuestion) {
@@ -44,18 +45,18 @@ export default class PolyominoCube extends Object3D {
       canvas.width = 128;
       canvas.height = 128;
       const ctx = canvas.getContext("2d")!;
-      
+
       // 绘制白色背景
       ctx.fillStyle = "#FFFFFF";
       ctx.fillRect(0, 0, 128, 128);
-      
+
       // 绘制黑色问号
       ctx.fillStyle = "#000000";
       ctx.font = "bold 80px Arial";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText("?", 64, 64);
-      
+
       // 创建纹理
       const texture = new CanvasTexture(canvas);
       material = new MeshBasicMaterial({
@@ -70,7 +71,7 @@ export default class PolyominoCube extends Object3D {
         opacity: opacity ?? 0.9,
       });
     }
-    
+
     const mesh = new Mesh(boxGeometry, material);
 
     const lineSegments = new LineSegments(
@@ -80,13 +81,19 @@ export default class PolyominoCube extends Object3D {
 
     this.add(mesh);
     this.add(lineSegments);
+    this.addClickListener(() => {
+      // 未变色时，点击事件被拦截
+      if (!this.isRevealed) {
+        return true;
+      }
+    });
   }
 
   // 改变方块颜色
   changeColor(color: ColorRepresentation): void {
     this.isQuestionBlock = false; // 不再是问号块
     this.isRevealed = true; // 标记为已变色
-    
+
     this.traverse((child) => {
       if (child instanceof Mesh) {
         const material = child.material as MeshBasicMaterial;
