@@ -6,6 +6,7 @@ import {
   Mesh,
   MeshBasicMaterial,
   Object3D,
+  CanvasTexture,
   type ColorRepresentation,
 } from "three";
 
@@ -35,11 +36,41 @@ export default class PolyominoCube extends Object3D {
     const displayColor = isQuestion ? "#FFFFFF" : boxColor;
 
     const boxGeometry = new BoxGeometry(1, 1, 1);
-    const material = new MeshBasicMaterial({
-      color: displayColor,
-      transparent: opacity !== undefined,
-      opacity: opacity ?? 0.9,
-    });
+    
+    // 如果是问号块，创建带问号的材质
+    let material: MeshBasicMaterial;
+    if (isQuestion) {
+      const canvas = document.createElement("canvas");
+      canvas.width = 128;
+      canvas.height = 128;
+      const ctx = canvas.getContext("2d")!;
+      
+      // 绘制白色背景
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillRect(0, 0, 128, 128);
+      
+      // 绘制黑色问号
+      ctx.fillStyle = "#000000";
+      ctx.font = "bold 80px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("?", 64, 64);
+      
+      // 创建纹理
+      const texture = new CanvasTexture(canvas);
+      material = new MeshBasicMaterial({
+        map: texture,
+        transparent: opacity !== undefined,
+        opacity: opacity ?? 0.9,
+      });
+    } else {
+      material = new MeshBasicMaterial({
+        color: displayColor,
+        transparent: opacity !== undefined,
+        opacity: opacity ?? 0.9,
+      });
+    }
+    
     const mesh = new Mesh(boxGeometry, material);
 
     const lineSegments = new LineSegments(
@@ -55,10 +86,12 @@ export default class PolyominoCube extends Object3D {
   changeColor(color: ColorRepresentation): void {
     this.isQuestionBlock = false; // 不再是问号块
     this.isRevealed = true; // 标记为已变色
-
+    
     this.traverse((child) => {
       if (child instanceof Mesh) {
         const material = child.material as MeshBasicMaterial;
+        // 移除纹理，使用纯色
+        material.map = null;
         material.color.set(color);
       }
     });
