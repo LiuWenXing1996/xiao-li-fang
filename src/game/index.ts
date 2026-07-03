@@ -1,3 +1,10 @@
+// TODO:有闯关模式和无限模式，还有自定义地图模式
+// TODO:地图有种子，可以根据种子找到对应的地图
+// TODO:无限模式就没有地图了吧，不然也太多种子了
+// TODO:奖励：用户每次通关都给星星，星星可以买道具和皮肤
+// TODO:上线是至少 3 套皮肤，
+// TODO:至少 50 关
+// TODO:道具有炸弹、涂色
 import { WebGLRenderer } from "three";
 import UI from "./UI";
 
