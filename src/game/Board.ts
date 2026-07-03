@@ -8,6 +8,7 @@ export class Board extends Object3D {
   polyominoList: PolyominoList;
   cubeSplitter: CubeSplitter;
   size: number;
+  usedColors: string[] = []; // 存储已使用的颜色
 
   constructor(size: number) {
     super();
@@ -15,11 +16,25 @@ export class Board extends Object3D {
     this.polyominoList = new PolyominoList();
     this.add(this.polyominoList);
     this.cubeSplitter = new CubeSplitter();
+    this.usedColors = []; // 初始化颜色数组
   }
+  
   splitCube() {
-    const cubeSize = 6; // 实际立方体大小
+    const cubeSize = 6;
     const polyominoList = this.cubeSplitter.split(cubeSize, 10);
-    polyominoList.map((p) => {
+    
+    // 随机选择一个积木作为白色积木（问号积木）
+    const questionIndex = Math.floor(Math.random() * polyominoList.length);
+
+    polyominoList.map((p, index) => {
+      const isQuestion = index === questionIndex;
+      const polyominoColor = isQuestion ? "#FFFFFF" : randomColor();
+
+      // 如果不是白色积木，记录颜色
+      if (!isQuestion) {
+        this.usedColors.push(polyominoColor);
+      }
+
       const polyomino = new Polyomino({
         cubes: p.blocks.map((e) => {
           return {
@@ -28,18 +43,16 @@ export class Board extends Object3D {
               y: e.y,
               z: e.z,
             },
-            color: randomColor(),
+            color: polyominoColor,
+            isQuestion: isQuestion,
           };
         }),
-        color: randomColor(),
+        color: polyominoColor,
+        isQuestion: isQuestion,
       });
-      // polyomino.position.set(p.id, 0, 0);
-      // TODO:把他们并列排开，让用户可以滑动选择
-      // polyomino.scale.set(0.5, 0.5, 0.5);
       this.polyominoList.add(polyomino);
     });
-    // 将 polyominoList 平移，使立方体中心位于原点
-    // 立方体位置从 (0,0,0) 到 (cubeSize-1,cubeSize-1,cubeSize-1)，中心在 ((cubeSize-1)/2, (cubeSize-1)/2, (cubeSize-1)/2)
+
     const offset = (cubeSize - 1) / 2;
     this.polyominoList.position.set(-offset, -offset, -offset);
   }

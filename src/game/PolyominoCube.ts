@@ -8,26 +8,19 @@ import {
   Object3D,
   type ColorRepresentation,
 } from "three";
-/**
- * PolyominoCube 配置类型
- */
+
 export interface PolyominoCubeConfig {
-  /** 立方体填充颜色，默认为白色 "#FFFFFF" */
   boxColor?: ColorRepresentation;
-  /** 立方体透明度 */
   opacity?: number;
-  /** 立方体边缘线条颜色，默认为黑色 "#000000" */
   lineColor?: ColorRepresentation;
+  isQuestion?: boolean;
 }
-/**
- * 多格连块单个立方体，一个带边缘高亮的立方体网格对象，大小为 1x1x1
- */
+
 export default class PolyominoCube extends Object3D {
   public readonly config: Readonly<PolyominoCubeConfig>;
+  public isQuestionBlock: boolean = false; // 是否为问号块
+  public isRevealed: boolean = false; // 是否已变色
 
-  /**
-   * @param config - 配置参数
-   */
   constructor(config?: PolyominoCubeConfig) {
     super();
     this.config = Object.freeze(config ?? {});
@@ -35,19 +28,39 @@ export default class PolyominoCube extends Object3D {
       boxColor = "#FFFFFF",
       lineColor = "#000000",
       opacity,
+      isQuestion = false,
     } = this.config;
+
+    this.isQuestionBlock = isQuestion;
+    const displayColor = isQuestion ? "#FFFFFF" : boxColor;
+
     const boxGeometry = new BoxGeometry(1, 1, 1);
     const material = new MeshBasicMaterial({
-      color: boxColor,
+      color: displayColor,
       transparent: opacity !== undefined,
       opacity: opacity ?? 0.9,
     });
     const mesh = new Mesh(boxGeometry, material);
+
     const lineSegments = new LineSegments(
       new EdgesGeometry(boxGeometry),
       new LineBasicMaterial({ color: lineColor }),
     );
+
     this.add(mesh);
     this.add(lineSegments);
+  }
+
+  // 改变方块颜色
+  changeColor(color: ColorRepresentation): void {
+    this.isQuestionBlock = false; // 不再是问号块
+    this.isRevealed = true; // 标记为已变色
+
+    this.traverse((child) => {
+      if (child instanceof Mesh) {
+        const material = child.material as MeshBasicMaterial;
+        material.color.set(color);
+      }
+    });
   }
 }
